@@ -2,11 +2,16 @@ import React from "react";
 import styles from "./Toolbar.module.css";
 import { Logo } from "../../Logo/Logo";
 import { NavigationItems } from "../NavigationItems/NavigationItems";
+import { DrawerToggle } from "../SideDrawer/DrawerToggle/DrawerToggle";
 
-export const Toolbar: React.FC = () => {
+type ToolbarProps = {
+  drawerToggleClicked: () => void;
+};
+
+export const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
   return (
     <header className={styles.Toolbar}>
-      <div>MENU</div>
+      <DrawerToggle onClick={props.drawerToggleClicked} />
       <div className={styles.Logo}>
         <Logo />
       </div>
