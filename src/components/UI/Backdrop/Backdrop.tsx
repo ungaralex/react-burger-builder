@@ -1,13 +1,19 @@
-import React from "react";
+import React, { Component, ReactNode } from "react";
 import styles from "./Backdrop.module.css";
 
 type BackdropProps = {
   show: boolean;
-  onClick: () => void;
+  onClick: () => void | undefined;
 };
 
-export const Backdrop: React.FC<BackdropProps> = (props: BackdropProps) => {
-  return props.show ? (
-    <div className={styles.Backdrop} onClick={props.onClick} />
-  ) : null;
-};
+export class Backdrop extends Component<BackdropProps, unknown> {
+  public static defaultProps = {
+    onClick: undefined,
+  };
+
+  render(): ReactNode {
+    return this.props.show ? (
+      <div className={styles.Backdrop} onClick={this.props.onClick} />
+    ) : null;
+  }
+}
