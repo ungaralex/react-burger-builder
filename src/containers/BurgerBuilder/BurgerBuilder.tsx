@@ -1,4 +1,3 @@
-import { Auxiliary } from "../../hoc/Auxiliary";
 import React, { useState } from "react";
 import { Burger } from "../../components/Burger/Burger";
 import { BuildControls } from "../../components/Burger/BuildControls/BuildControls";
@@ -95,7 +94,7 @@ export const BurgerBuilder: React.FC = () => {
   });
 
   return (
-    <Auxiliary>
+    <>
       <Modal show={costState.purchasing} onCloseModal={purchaseCancelHandler}>
         <OrderSummary
           ingredients={ingredients}
@@ -113,6 +112,6 @@ export const BurgerBuilder: React.FC = () => {
         purchasable={costState.purchasable}
         onOrder={purchasedHandler}
       />
-    </Auxiliary>
+    </>
   );
 };
