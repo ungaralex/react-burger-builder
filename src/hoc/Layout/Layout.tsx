@@ -13,7 +13,7 @@ type LayoutState = {
 
 export class Layout extends Component<ChildProps, LayoutState> {
   state = {
-    showSideDrawer: true,
+    showSideDrawer: false,
   };
 
   sideDrawerClosedHandler = (): void => {

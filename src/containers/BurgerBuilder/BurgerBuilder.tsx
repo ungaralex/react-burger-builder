@@ -4,6 +4,7 @@ import { BuildControls } from "../../components/Burger/BuildControls/BuildContro
 import { IngredientType } from "../../components/Burger/BurgerIngredient/BurgerIngredient";
 import { Modal } from "../../components/UI/Modal/Modal";
 import { OrderSummary } from "../../components/Burger/OrderSummery/OrderSummary";
+import fetch from "../../services/fetch";
 
 const INGREDIENT_PRICES = new Map<IngredientType, number>([
   [IngredientType.salad, 0.5],
@@ -56,6 +57,7 @@ export const BurgerBuilder: React.FC = () => {
     const updatedIngredients = new Map(ingredients);
     updatedIngredients.set(ingredientType, updatedCount);
     const newPrice =
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       costState.totalPrice + INGREDIENT_PRICES.get(ingredientType)!;
     changeIngredients(updatedIngredients);
     updateCostState(newPrice, updatedIngredients);
@@ -69,6 +71,7 @@ export const BurgerBuilder: React.FC = () => {
     updatedIngredients.set(ingredientType, updatedCount);
     const newPrice = Math.max(
       4,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       costState.totalPrice - INGREDIENT_PRICES.get(ingredientType)!
     );
     changeCostState({ ...costState, totalPrice: newPrice });
@@ -85,7 +88,24 @@ export const BurgerBuilder: React.FC = () => {
   };
 
   const purchaseConfirmHandler = () => {
-    alert("You continue!");
+    const order = {
+      ingredients: ingredients,
+      price: costState.totalPrice,
+      customer: {
+        name: "Alex",
+        address: {
+          street: "Mainstreet",
+          zipCode: "83743",
+          country: "Germany",
+        },
+        email: "test@tester.com",
+      },
+      deliveryMethod: "fastest",
+    };
+
+    fetch("/orders.json", { method: "POST", body: JSON.stringify(order) })
+      .then((resp) => console.log(resp))
+      .catch((err) => console.log(err));
   };
 
   const disabledInfo = new Map<IngredientType, boolean>();
