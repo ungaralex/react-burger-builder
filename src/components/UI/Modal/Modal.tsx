@@ -9,8 +9,18 @@ type ModalProps = {
 };
 
 export class Modal extends Component<ModalProps, unknown> {
+  public static defaultProps = {
+    children: null,
+    show: true,
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onCloseModal: (): void => {},
+  };
+
   shouldComponentUpdate(nextProps: Readonly<ModalProps>): boolean {
-    return nextProps.show !== this.props.show;
+    return (
+      nextProps.show !== this.props.show ||
+      nextProps.children !== this.props.children
+    );
   }
 
   render(): ReactNode {

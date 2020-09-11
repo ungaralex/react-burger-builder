@@ -1,6 +1,6 @@
 const baseUrl = "https://react-tutorial-burger-bu-7559f.firebaseio.com";
 
-const prefixedFetch = (
+export const firebaseDBFetch = (
   input: RequestInfo,
   init?: RequestInit
 ): Promise<Response> => {
@@ -10,5 +10,3 @@ const prefixedFetch = (
 
   return fetch(input, init);
 };
-
-export default prefixedFetch;

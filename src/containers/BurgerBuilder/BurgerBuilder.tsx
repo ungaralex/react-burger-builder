@@ -4,7 +4,9 @@ import { BuildControls } from "../../components/Burger/BuildControls/BuildContro
 import { IngredientType } from "../../components/Burger/BurgerIngredient/BurgerIngredient";
 import { Modal } from "../../components/UI/Modal/Modal";
 import { OrderSummary } from "../../components/Burger/OrderSummery/OrderSummary";
-import fetch from "../../services/fetch";
+import { firebaseDBFetch } from "../../services/fetch";
+import { Spinner } from "../../components/UI/Spinner/Spinner";
+import { withErrorHandler } from "../../hoc/withErrorHandler/withErrorHandler";
 
 const INGREDIENT_PRICES = new Map<IngredientType, number>([
   [IngredientType.salad, 0.5],
@@ -19,7 +21,7 @@ type CostState = {
   purchasing: boolean;
 };
 
-export const BurgerBuilder: React.FC = () => {
+const BurgerBuilder: React.FC = () => {
   const [ingredients, changeIngredients] = useState<
     Map<IngredientType, number>
   >(
@@ -35,6 +37,7 @@ export const BurgerBuilder: React.FC = () => {
     purchasable: false,
     purchasing: false,
   });
+  const [loadingState, changeLoadingState] = useState(false);
 
   const updateCostState = (
     newPrice: number,
@@ -88,6 +91,7 @@ export const BurgerBuilder: React.FC = () => {
   };
 
   const purchaseConfirmHandler = () => {
+    changeLoadingState(true);
     const order = {
       ingredients: ingredients,
       price: costState.totalPrice,
@@ -103,9 +107,10 @@ export const BurgerBuilder: React.FC = () => {
       deliveryMethod: "fastest",
     };
 
-    fetch("/orders.json", { method: "POST", body: JSON.stringify(order) })
-      .then((resp) => console.log(resp))
-      .catch((err) => console.log(err));
+    firebaseDBFetch("/orders.json", {
+      method: "POST",
+      body: JSON.stringify(order),
+    }).finally(() => changeLoadingState(false));
   };
 
   const disabledInfo = new Map<IngredientType, boolean>();
@@ -113,15 +118,21 @@ export const BurgerBuilder: React.FC = () => {
     disabledInfo.set(igKey, amount <= 0);
   });
 
+  const orderSummary = loadingState ? (
+    <Spinner />
+  ) : (
+    <OrderSummary
+      ingredients={ingredients}
+      price={costState.totalPrice}
+      onAbort={purchaseCancelHandler}
+      onBuy={purchaseConfirmHandler}
+    />
+  );
+
   return (
     <>
       <Modal show={costState.purchasing} onCloseModal={purchaseCancelHandler}>
-        <OrderSummary
-          ingredients={ingredients}
-          price={costState.totalPrice}
-          onAbort={purchaseCancelHandler}
-          onBuy={purchaseConfirmHandler}
-        />
+        {orderSummary}
       </Modal>
       <Burger ingredients={ingredients} />
       <BuildControls
@@ -135,3 +146,5 @@ export const BurgerBuilder: React.FC = () => {
     </>
   );
 };
+
+export default withErrorHandler(BurgerBuilder);
